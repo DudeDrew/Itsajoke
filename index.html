@@ -3,69 +3,41 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Random Joke</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            background-color: #f0f8ff;
-            color: #333;
+    <title>Dad Joke JSON API</title>
+    <script>
+        async function serveDadJokeAsJSON() {
+            const urlParams = new URLSearchParams(window.location.search);
+
+            if (urlParams.has('getJoke')) {
+                try {
+                    const response = await fetch('https://icanhazdadjoke.com/', {
+                        headers: { 'Accept': 'application/json' }
+                    });
+                    const data = await response.json();
+
+                    // Serve JSON content in response to the get request
+                    const jsonResponse = JSON.stringify({ joke: data.joke }, null, 2);
+
+                    // Display JSON as the page's content, simulating an API JSON response
+                    document.body.innerHTML = `<pre>${jsonResponse}</pre>`;
+                } catch (error) {
+                    // Serve JSON error message
+                    const errorResponse = JSON.stringify({ error: "Could not fetch a joke at the moment." }, null, 2);
+                    document.body.innerHTML = `<pre>${errorResponse}</pre>`;
+                    console.error('Error fetching joke:', error);
+                }
+            } else {
+                // Provide information on how to use the simulated GET endpoint
+                document.body.innerHTML = `
+                    <h1>Dad Joke JSON API</h1>
+                    <p>To retrieve a joke as a JSON response, add <code>?getJoke</code> to the URL.</p>
+                `;
+            }
         }
-        .joke-container {
-            text-align: center;
-            padding: 20px;
-            border: 1px solid #ddd;
-            border-radius: 8px;
-            box-shadow: 0 0 10px rgba(0,0,0,0.1);
-            background-color: #fff;
-        }
-        .setup {
-            font-size: 1.5em;
-            margin-bottom: 10px;
-        }
-        .punchline {
-            font-size: 1.2em;
-            color: #007acc;
-        }
-    </style>
+
+        window.onload = serveDadJokeAsJSON;
+    </script>
 </head>
 <body>
-    <div class="joke-container" id="jokeContainer">
-        <p class="setup" id="setup"></p>
-        <p class="punchline" id="punchline"></p>
-    </div>
-
-    <script>
-        // Function to check and add ?getJoke to the URL
-        function checkAndAddJokeParam() {
-            const url = new URL(window.location.href);
-            if (!url.searchParams.has('getJoke')) {
-                url.searchParams.set('getJoke', '');
-                window.location.href = url.href; // Redirect with ?getJoke added
-            } else {
-                fetchJoke(); // If ?getJoke is already present, fetch the joke
-            }
-        }
-
-        // Function to fetch and display the joke
-        async function fetchJoke() {
-            try {
-                const response = await fetch('https://official-joke-api.appspot.com/random_joke');
-                const data = await response.json();
-                document.getElementById('setup').textContent = data.setup;
-                document.getElementById('punchline').textContent = data.punchline;
-            } catch (error) {
-                document.getElementById('setup').textContent = 'Oops!';
-                document.getElementById('punchline').textContent = 'Could not fetch a joke at the moment.';
-                console.error('Error fetching joke:', error);
-            }
-        }
-
-        // Run the function on page load
-        checkAndAddJokeParam();
-    </script>
 </body>
 </html>
