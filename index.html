@@ -3,25 +3,24 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Random Joke</title>
+    <title>Joke API Page</title>
 </head>
 <body>
-    <h1>Here's a Random Joke for You!</h1>
-    <p id="joke"></p>
-
     <script>
-        async function fetchJoke() {
-            try {
+        async function serveJoke() {
+            if (window.location.search.includes('getJoke')) {
                 const response = await fetch('https://official-joke-api.appspot.com/random_joke');
-                const data = await response.json();
-                document.getElementById('joke').textContent = `${data.setup} - ${data.punchline}`;
-            } catch (error) {
-                document.getElementById('joke').textContent = 'Oops! Could not fetch a joke at the moment.';
-                console.error('Error fetching joke:', error);
+                const jokeData = await response.json();
+                document.body.innerHTML = `<pre>${JSON.stringify(jokeData, null, 2)}</pre>`;
+            } else {
+                document.body.innerHTML = `
+                    <h1>Welcome to the Joke API Page</h1>
+                    <p>To get a joke, add <code>?getJoke</code> to the URL.</p>
+                `;
             }
         }
 
-        window.onload = fetchJoke;
+        serveJoke();
     </script>
 </body>
 </html>
